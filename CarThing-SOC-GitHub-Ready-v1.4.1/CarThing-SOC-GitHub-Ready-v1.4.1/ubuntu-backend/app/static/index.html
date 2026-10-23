@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CarThing SOC • Home Lab</title>
+<style>
+  :root { color-scheme: dark; --bg:#0b1220; --panel:#152238; --raised:#1b2c45; --line:#293a53; --txt:#e8f1ff; --muted:#9bb0c8; --mint:#55e5ba; --red:#fc828b; --gold:#ffd17b }
+  *{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at top,#142843,#0b1220 62%);color:var(--txt);font:15px/1.5 system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+  main{max-width:1120px;margin:0 auto;padding:28px 20px 50px}
+  h1{font-size:24px;line-height:1.1;margin:0} h2{font-size:15px;margin:0 0 15px;color:#d7e8f9;text-transform:uppercase;letter-spacing:.09em}
+  .top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:23px}
+  .brand{display:flex;align-items:center;gap:13px}.logo{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:#1d443f;color:var(--mint);font-size:23px}
+  .muted,.sub{color:var(--muted)} .sub{font-size:12px;margin-top:5px} .status{font-size:13px;border-radius:20px;padding:6px 11px;background:#293449;color:var(--muted)}
+  .connect{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:15px;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:20px}
+  input{flex:1;min-width:170px;background:#0b1829;border:1px solid #41536d;border-radius:8px;color:white;padding:11px;font-size:14px}
+  button{border:0;border-radius:8px;padding:11px 16px;background:var(--mint);color:#082018;font-weight:700;cursor:pointer} button:disabled{opacity:.5;cursor:wait}
+  .help{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px} .panel{grid-column:span 6;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+  .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.stat{padding:15px 10px;background:var(--raised);border-radius:10px;min-width:0;text-align:center}
+  .stat strong{font-size:28px;display:block;color:var(--mint);font-weight:700;font-variant-numeric:tabular-nums}.stat small{font-size:12px;color:var(--muted)}
+  .row{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;justify-content:space-between}.row:last-child{border:0}.row>span:first-child{min-width:0;overflow-wrap:anywhere}
+  .pill{font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.05em;border-radius:6px;background:#32485b;color:#bfd3e6;padding:4px 8px;white-space:nowrap}
+  .pill.ok,.pill.running,.pill.low{background:#1b493f;color:#91e5cd}.pill.critical,.pill.exited,.pill.dead,.pill.missing{background:#553038;color:#ff9fa8}.pill.high{background:#603e35;color:#ffb197}.pill.medium{background:#534734;color:#ffe1a4}
+  #alertsPanel{grid-column:span 12} #alerts>div{display:grid;grid-template-columns:1fr auto;gap:5px 14px}.alert-meta{font-size:12px;color:var(--muted);grid-column:1 / -1;overflow-wrap:anywhere}
+  .note{font-size:12px;color:var(--muted);padding-top:8px} .warn{color:var(--gold)}
+  @media (max-width:740px){.panel{grid-column:span 12}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat strong{font-size:21px} main{padding:18px 12px}}
+</style>
+</head>
+<body><main>
+  <header class="top"><div class="brand"><div class="logo">⛨</div><div><h1>CARTHING // SOC</h1><div class="sub">Read-only home lab monitoring • Browser preview</div></div></div><div class="status" id="live">NOT CONNECTED</div></header>
+  <section class="connect"><label for="key">API key</label><input id="key" type="password" placeholder="Paste CARTHING_API_KEY from server .env" autocomplete="off" /><button id="connect">Connect</button></section>
+  <p class="help">The key stays only in this browser tab's memory. Refreshing the page clears it. Never share it or add it to a public GitHub repo.</p>
+  <div class="grid">
+    <section class="panel"><h2>Server health</h2><div class="stats"><div class="stat"><strong id="cpu">—</strong><small>CPU</small></div><div class="stat"><strong id="ram">—</strong><small>RAM</small></div><div class="stat"><strong id="disk">—</strong><small>Disk</small></div></div><p class="note" id="serverFoot">Waiting for server data</p></section>
+    <section class="panel"><h2>Network / Tailscale</h2><div class="row"><span>Connection</span><span class="pill" id="ts">UNKNOWN</span></div><div class="row"><span>Tailnet peers</span><strong id="peers">—</strong></div><p class="note" id="tsFoot">Waiting for status</p></section>
+    <section class="panel"><h2>Docker services</h2><div id="containers"><p class="note">Waiting for Docker data</p></div></section>
+    <section class="panel"><h2>Security snapshot</h2><div class="stats"><div class="stat"><strong id="critical" style="color:var(--red)">—</strong><small>Critical</small></div><div class="stat"><strong id="high" style="color:var(--gold)">—</strong><small>High</small></div><div class="stat"><strong id="medium">—</strong><small>Medium</small></div></div><p class="note" id="securityFoot">Connect Wazuh to show alerts</p></section>
+    <section class="panel" id="alertsPanel"><h2>Latest Wazuh events</h2><div id="alerts"><p class="note">Waiting for alerts</p></div><p class="note" id="timestamp"></p></section>
+  </div>
+</main>
+<script>
+(() => {
+  let key = '';
+  let timer = null;
+  const el = id => document.getElementById(id);
+  const setText = (id, v) => { el(id).textContent = v ?? '—'; };
+  function pill(text, type) {
+    const item = document.createElement('span');
+    item.className = 'pill ' + (type || '');
+    item.textContent = String(text || 'unknown');
+    return item;
+  }
+  function row(container, name, label, type) {
+    const r = document.createElement('div'); r.className = 'row';
+    const t = document.createElement('span'); t.textContent = String(name);
+    r.append(t, pill(label, type)); container.appendChild(r);
+  }
+  async function refresh() {
+    if (!key) return;
+    try {
+      const ctrl = new AbortController();
+      const abort = setTimeout(() => ctrl.abort(), 10000);
+      let resp;
+      try { resp = await fetch('/api/v1/overview', {headers:{'X-API-Key':key},signal:ctrl.signal,cache:'no-store'}); }
+      finally { clearTimeout(abort); }
+      if (!resp.ok) throw new Error(resp.status === 401 ? 'INVALID API KEY' : `API ERROR ${resp.status}`);
+      const d = await resp.json();
+      setText('live', 'CONNECTED • LIVE');
+      const s = d.server || {};
+      for(const [id,k] of [['cpu','cpu_percent'],['ram','ram_percent'],['disk','disk_percent']]) setText(id,s.status==='ok'?s[k]+'%':'—');
+      setText('serverFoot',s.status==='ok'?`${s.hostname} • Uptime ${Math.floor(s.uptime_seconds/3600)} hours • ${s.disk_free_gb} GB free`:s.message || 'Unavailable');
+      const t = d.tailscale || {};
+      setText('ts',t.status==='ok'?(t.connected?'CONNECTED':'DISCONNECTED'):'UNAVAILABLE');
+      el('ts').className = 'pill ' + (t.connected?'ok':'');
+      setText('peers',t.status==='ok'?t.peer_count:'—');
+      setText('tsFoot',t.status==='ok'?(t.tailscale_ips||[]).join(' • '):(t.message || 'Unavailable'));
+      const docker = d.docker || {};
+      const dockerEl = el('containers'); dockerEl.replaceChildren();
+      if(docker.status!=='ok'){ const p=document.createElement('p');p.className='note';p.textContent=docker.message || 'Docker unavailable';dockerEl.appendChild(p); }
+      else if (!docker.containers.length) { const p=document.createElement('p');p.className='note';p.textContent='No containers found';dockerEl.appendChild(p); }
+      else docker.containers.forEach(c=>row(dockerEl,c.name,c.state,c.state));
+      const w=d.wazuh||{}; const cs=w.severity_in_returned||{};
+      for(const k of ['critical','high','medium']) setText(k,w.status==='ok'?(cs[k]||0):'—');
+      setText('securityFoot',w.status==='ok'?`${w.returned} recent alerts returned (last ${w.window_hours}h) • Severity counts only for displayed sample`:(w.message || 'Wazuh unavailable'));
+      const alerts=el('alerts'); alerts.replaceChildren();
+      if(w.status==='ok' && w.alerts?.length){
+        w.alerts.forEach(a=>{ const item=document.createElement('div'); item.className='row';
+          const desc=document.createElement('span'); desc.textContent=a.description;
+          const meta=document.createElement('span');meta.className='alert-meta';meta.textContent=`${a.timestamp} • ${a.agent}${a.source_ip?' • '+a.source_ip:''}`;
+          item.append(desc,pill(a.severity,a.severity),meta);alerts.appendChild(item); });
+      } else { const p=document.createElement('p');p.className='note';p.textContent=w.status==='ok'?'No alerts in requested window':(w.message||'Alerts unavailable');alerts.appendChild(p); }
+      setText('timestamp', `Last fetched ${new Date().toLocaleTimeString()} • Server generated ${d.generated_at}`);
+    } catch (err) { setText('live',String(err.message || err)); }
+  }
+  el('connect').addEventListener('click',()=>{
+    key=el('key').value.trim();el('key').value='';
+    if(timer)clearInterval(timer);
+    refresh(); if(key)timer=setInterval(refresh,12000);
+  });
+  el('key').addEventListener('keydown',e=>{if(e.key==='Enter')el('connect').click();});
+})();
+</script>
+</body>
+</html>

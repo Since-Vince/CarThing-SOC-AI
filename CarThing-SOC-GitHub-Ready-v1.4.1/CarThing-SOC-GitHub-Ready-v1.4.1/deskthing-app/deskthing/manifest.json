@@ -1,0 +1,30 @@
+{
+  "id": "carthing-soc",
+  "isWebApp": true,
+  "requires": [],
+  "label": "CarThing SOC",
+  "version": "1.4.1",
+  "version_code": 141,
+  "compatible_server": [
+    11
+  ],
+  "compatible_client": [
+    11
+  ],
+  "description": "Read-only CarThing SOC with on-demand local Ollama Wazuh investigations.",
+  "author": "CarThing SOC Project",
+  "platforms": [
+    "windows"
+  ],
+  "homepage": "",
+  "repository": "",
+  "tags": [
+    "webappOnly"
+  ],
+  "requiredVersions": {
+    "server": ">=0.11.0",
+    "client": ">=0.11.2"
+  },
+  "updateUrl": "",
+  "template": "full"
+}

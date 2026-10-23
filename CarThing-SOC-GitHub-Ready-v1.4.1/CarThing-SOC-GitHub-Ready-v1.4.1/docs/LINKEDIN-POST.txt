@@ -1,0 +1,21 @@
+Built a miniature AI-assisted Security Operations Center using a repurposed Spotify Car Thing. 🛡️
+
+I wanted to turn an old piece of hardware into something useful for my cybersecurity home lab, so I connected it to my Ubuntu server, Wazuh, and a locally hosted Ollama model.
+
+The result is CarThing SOC — a touchscreen dashboard with working physical knob navigation that shows server health, Docker services, Tailscale connectivity, and Wazuh security events.
+
+My favorite feature is on-demand AI investigation: I can select a Wazuh alert, request an analysis, and review a short summary, supporting evidence, possible explanations, and recommended investigation steps directly on the Car Thing.
+
+One challenge was making the AI trustworthy. During testing, the model confused Windows Security Event IDs, so I added verified event definitions and checks that flag unreliable explanations. AI verdicts are provisional and still require analyst review.
+
+What I learned:
+• Building and debugging a full-stack integration across Linux, Windows, and embedded hardware
+• Working with Wazuh alert data and security-event investigations
+• Connecting FastAPI, Docker, Tailscale, DeskThing, and Ollama
+• Designing a read-only, on-demand AI workflow instead of blindly automating remediation
+
+Next, I want to add persistent investigation history, analyst verdicts, and better correlation of repeat alerts.
+
+GitHub: [ADD PUBLIC REPO LINK]
+
+#Cybersecurity #SOCAnalyst #HomeLab #Wazuh #Ollama #Python #BlueTeam
