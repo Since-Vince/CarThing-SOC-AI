@@ -1,6 +1,3 @@
-[CarThing-SOC-README-v1.4.1.md](https://github.com/user-attachments/files/33853990/CarThing-SOC-README-v1.4.1.md)
-# CarThing-SOC-AI
-Repurposed Spotify Car Thing into an interactive cybersecurity monitoring console with Wazuh, Docker, Tailscale, FastAPI, DeskThing, and on-demand local Ollama investigations.
 # CarThing SOC AI — A Miniature SOC Console on Spotify Car Thing
 
 **A personal cybersecurity home-lab project:** a repurposed Spotify Car Thing becomes a compact security monitoring and *on-demand* AI-assisted investigation dashboard.
