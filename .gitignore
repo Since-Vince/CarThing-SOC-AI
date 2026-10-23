@@ -1,0 +1,30 @@
+# Local secrets and runtime configuration
+.env
+.env.*
+!.env.example
+**/config.json
+**/CarThingSOC/config.json
+*.pem
+*.key
+*.p12
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Node / DeskThing
+node_modules/
+dist/
+build/
+.vite/
+*.log
+
+# Editor / system
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,10 +1,26 @@
 # CarThing SOC AI — A Miniature SOC Console on Spotify Car Thing
 
-**A personal cybersecurity home-lab project:** a repurposed Spotify Car Thing becomes a compact security monitoring and *on-demand* AI-assisted investigation dashboard.
+**A repurposed Spotify Car Thing turned into an interactive home-lab SOC dashboard, with live Wazuh alerts and on-demand local Ollama investigation summaries.**
 
-**Status:** Working on the author's home lab; this is a **portfolio / experimental project**, not a production security appliance. Current DeskThing client app version: **v1.4.1**. The API service is composed from the v1.1 base, v1.3 Wazuh enrichment, and v1.4 on-demand AI patch.
+![CarThing SOC overview](docs/screenshots/01-carthing-overview.jpg)
 
-> **Screenshots:** Add redacted screenshots or a 20–30 second demo clip under `docs/screenshots/`. Include (1) physical Car Thing on the Overview page, (2) Security alert list, (3) one selected alert, and (4) AI summary. Do not post an offline/error state as the only demo image. The sample screenshots are intentionally not included in this repository to prevent exposing private infrastructure details.
+**Built with:** Spotify Car Thing · DeskThing · Wazuh · Python / FastAPI · Docker · Tailscale · Ollama · React / TypeScript
+
+**Status:** Home-lab portfolio project (experimental; not a production security appliance). DeskThing app **v1.4.1**.
+
+## Project showcase
+
+The screens below show the monitoring and analyst workflow, from live telemetry to an AI-assisted explanation of a selected security event. AI findings are **provisional** and require analyst verification.
+
+| Live security alerts | Selected alert details |
+|:---:|:---:|
+| ![Wazuh security alert list](docs/screenshots/02-security-alerts.png) | ![Wazuh alert investigation details](docs/screenshots/03-alert-details.png) |
+
+### On-demand Ollama investigation
+
+![Ollama summary displayed on CarThing SOC](docs/screenshots/04-ai-summary.png)
+
+**Workflow:** Open **Security** → choose a Wazuh alert → **Investigate with AI** → review the explanation, available evidence, caveats, and next steps. Analysis runs on the Ubuntu home lab; the Car Thing is the monitoring and investigation interface.
 
 ## What it does
 
@@ -57,8 +73,10 @@ The AI is **invoked only after a user presses Investigate**, not for every incom
 │   ├── app/
 │   ├── scripts/
 │   └── tests/
-├── docs/              # Redacted screenshot placeholders and post guidance
+├── docs/
+│   └── screenshots/    # Redacted photos and interface captures
 ├── .gitignore
+├── SECURITY.md
 └── README.md
 ```
 
