@@ -4,6 +4,10 @@
 
 ![CarThing SOC overview](docs/screenshots/01-carthing-overview.jpg)
 
+
+https://github.com/user-attachments/assets/6127159d-5fc3-4c64-b533-5eb57ef09dce
+
+
 **Built with:** Spotify Car Thing · DeskThing · Wazuh · Python / FastAPI · Docker · Tailscale · Ollama · React / TypeScript
 
 **Status:** Home-lab portfolio project (experimental; not a production security appliance). DeskThing app **v1.4.1**.
